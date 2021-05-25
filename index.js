@@ -1,64 +1,25 @@
-const curDate = document.getElementById("date");
-        let weathercon= document.getElementById("weathercon");
+const http = require("http");
+const fs = require("fs");
+const homeFile = fs.readFileSync("home.html", "utf-8")
+var requests = require("requests");
 
-        const tempStatus = "Clouds";
-
-        const getCurrentDay = () => {
-            var weekday = new Array(7);
-            weekday[0] = "Sunday";
-            weekday[1] = "Monday";
-            weekday[2] = "Tuesday";
-            weekday[3] = "Wednesday";
-            weekday[4] =  "Thursday";
-            weekday[5] =  "Friday";
-            weekday[6] = "Saturday";
-            let currentTime = new Date();
-          let day =(weekday[currentTime.getDay()]);
-          return day;
-        };
-
-        const getCurrentTime = () => {
-            var months = [
-                "Jan",
-                "Feb",
-                "Mar",
-                "Apr",
-                "May",
-                "June",
-                "July",
-                "Aug",
-                "Sep",
-                "Oct",
-                "Nov",
-                "Dec"
-            ]
-            var now=new Date();
-            var month = months[now.getMonth() ];
-            var date = now.getDate();
-      
-
-            let hours = now.getHours();
-            let mins = now.getMinutes();
-
-            var session="AM";
-    if(hours===0)
-    {
-        hours=12;
+const server = http.createServer((req, res) =>{
+    if (req.url== "/"){
+        requests("http://api.openweathermap.org/data/2.5/weather?q=Pune&units=metric&APPID=13f32b1a5f095aae09bb1f8edbf9ec36")
+        .on("data", (chunk)=>{
+            const objdata = JSON.parse(chunk);
+            const arrdata = [objdata];
+           // console.log(arrdata[0].main.temp);
+           const realTimeData = arrdata.map((val)=>{
+               
+               replaceVal(homeFile, val);
+               //rendering of fetched values yet to be done
+           });
+        })
+        .on("end",  (err)=>{
+            if(err) return console.log("connection closed due to errors", err);
+            console.log('end');
+        });
     }
-    if(hours>12)
-    {
-        hours=hours-12;
-        session="PM";
-    }
-    if(hours<10)
-    {
-        hours="0"+hours;
-    }
-    if(mins<10)
-    {
-        mins="0"+mins;
-    }
-    return `${month}  ${date} | ${hours}:${mins}${session}`;
-        };
-
-        curDate.innerHTML=getCurrentDay() + " | "+ getCurrentTime();
+});
+server.listen(8000, "127.0.0.1");
