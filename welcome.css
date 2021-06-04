@@ -12,7 +12,9 @@ h1 {
     padding: 0;
 }
 body{
-   background-image:url('C:\Users\hp\Desktop/mybg.jpeg');
+   background-image:url('kk.jpg');
+   background-repeat: no-repeat;
+   background-size: 100% 250%;
 }
 .container {
    
